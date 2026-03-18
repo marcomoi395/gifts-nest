@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import type { StringValue } from 'ms';
 import { User } from '../database/entities/user.entity';
 import { AuthController } from './auth.controller';
+import { AdminAuthController } from './admin-auth.controller';
 import { AuthService } from './auth.service';
 import { RolesGuard } from './guards/roles.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -20,7 +21,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
             },
         }),
     ],
-    controllers: [AuthController],
+    controllers: [AuthController, AdminAuthController],
     providers: [AuthService, JwtStrategy, RolesGuard],
     exports: [AuthService, RolesGuard],
 })
