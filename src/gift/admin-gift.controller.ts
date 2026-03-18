@@ -2,11 +2,13 @@ import {
     Body,
     Controller,
     Delete,
+    Get,
     HttpCode,
     Param,
     ParseUUIDPipe,
     Post,
     Put,
+    Query,
     UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,12 +18,30 @@ import { UserRole } from '../database/entities/user-role.enum';
 import { CreateGiftDto } from './dto/create-gift.dto';
 import { UpdateGiftDto } from './dto/update-gift.dto';
 import { GiftsService } from './gift.service';
+import { getGiftDto } from './dto/get-gift.dto';
 
 @Controller('admin/gift')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(UserRole.ADMIN)
 export class AdminGiftsController {
     constructor(private readonly giftsService: GiftsService) {}
+
+    @Get()
+    @UseGuards(AuthGuard('jwt'))
+    async getGiftsForAdmin(@Query() query: getGiftDto): Promise<{
+        statusCode: number;
+        message: string;
+        data: Awaited<ReturnType<GiftsService['getGiftsForAdmin']>>;
+    }> {
+        const { limit = 10, page = 1, sortBy = 'createdAt', sortOrder = 'DESC' } = query;
+        const data = await this.giftsService.getGiftsForAdmin(page, limit, sortBy, sortOrder);
+
+        return {
+            statusCode: 200,
+            message: 'Fetched gifts successfully',
+            data,
+        };
+    }
 
     @Post()
     async createGift(@Body() createGiftDto: CreateGiftDto): Promise<{

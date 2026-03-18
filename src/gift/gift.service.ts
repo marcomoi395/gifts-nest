@@ -24,10 +24,38 @@ export class GiftsService {
         private readonly giftRepository: Repository<Gift>,
     ) {}
 
-    async getGifts(page: number, limit: number): Promise<GiftsPageResult> {
+    async getGifts(
+        page: number,
+        limit: number,
+        sortBy: 'createdAt' | 'name' | 'points' | 'stock' | 'monetaryValue' = 'createdAt',
+        sortOrder: 'ASC' | 'DESC' = 'DESC',
+    ): Promise<GiftsPageResult> {
         const [items, total] = await this.giftRepository.findAndCount({
             where: { isActive: true },
-            order: { createdAt: 'DESC' },
+            order: { [sortBy]: sortOrder },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+
+        return {
+            items,
+            meta: {
+                page,
+                limit,
+                total,
+                totalPages: total === 0 ? 0 : Math.ceil(total / limit),
+            },
+        };
+    }
+
+    async getGiftsForAdmin(
+        page: number,
+        limit: number,
+        sortBy: 'createdAt' | 'name' | 'points' | 'stock' | 'monetaryValue' = 'createdAt',
+        sortOrder: 'ASC' | 'DESC' = 'DESC',
+    ): Promise<GiftsPageResult> {
+        const [items, total] = await this.giftRepository.findAndCount({
+            order: { [sortBy]: sortOrder },
             skip: (page - 1) * limit,
             take: limit,
         });

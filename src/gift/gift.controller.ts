@@ -14,8 +14,8 @@ export class GiftsController {
         message: string;
         data: Awaited<ReturnType<GiftsService['getGifts']>>;
     }> {
-        const { limit = 10, page = 1 } = query;
-        const data = await this.giftsService.getGifts(page, limit);
+        const { limit = 10, page = 1, sortBy = 'createdAt', sortOrder = 'DESC' } = query;
+        const data = await this.giftsService.getGifts(page, limit, sortBy, sortOrder);
 
         return {
             statusCode: 200,

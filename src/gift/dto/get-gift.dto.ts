@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsNumber, Min, Max } from 'class-validator';
+import { IsOptional, IsNumber, Min, Max, IsString, IsIn } from 'class-validator';
 
 export class getGiftDto {
     @IsOptional()
@@ -14,4 +14,14 @@ export class getGiftDto {
     @Min(1)
     @Max(100)
     limit?: number;
+
+    @IsOptional()
+    @IsString()
+    @IsIn(['createdAt', 'name', 'points', 'stock', 'monetaryValue'])
+    sortBy?: 'createdAt' | 'name' | 'points' | 'stock' | 'monetaryValue';
+
+    @IsOptional()
+    @IsString()
+    @IsIn(['ASC', 'DESC'])
+    sortOrder?: 'ASC' | 'DESC';
 }
