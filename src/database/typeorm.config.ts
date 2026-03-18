@@ -2,6 +2,8 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSourceOptions } from 'typeorm';
 import { Gift } from './entities/gift.entity';
 import { User } from './entities/user.entity';
+import { config } from 'dotenv';
+config();
 
 const databasePort = Number(process.env.DB_PORT ?? 5432);
 
