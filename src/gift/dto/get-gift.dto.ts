@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsNumber, Min, Max, IsString, IsIn } from 'class-validator';
 
-export class getGiftDto {
+export class GetGiftDto {
     @IsOptional()
     @IsNumber()
     @Type(() => Number)

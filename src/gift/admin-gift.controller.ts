@@ -18,7 +18,7 @@ import { UserRole } from '../database/entities/user-role.enum';
 import { CreateGiftDto } from './dto/create-gift.dto';
 import { UpdateGiftDto } from './dto/update-gift.dto';
 import { GiftsService } from './gift.service';
-import { getGiftDto } from './dto/get-gift.dto';
+import { GetGiftDto } from './dto/get-gift.dto';
 
 @Controller('admin/gift')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -28,7 +28,7 @@ export class AdminGiftsController {
 
     @Get()
     @UseGuards(AuthGuard('jwt'))
-    async getGiftsForAdmin(@Query() query: getGiftDto): Promise<{
+    async getGiftsForAdmin(@Query() query: GetGiftDto): Promise<{
         statusCode: number;
         message: string;
         data: Awaited<ReturnType<GiftsService['getGiftsForAdmin']>>;
