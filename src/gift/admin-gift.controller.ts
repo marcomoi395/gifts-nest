@@ -19,6 +19,8 @@ import { CreateGiftDto } from './dto/create-gift.dto';
 import { UpdateGiftDto } from './dto/update-gift.dto';
 import { GiftsService } from './gift.service';
 import { GetGiftDto } from './dto/get-gift.dto';
+import { ApiResponseDto } from '../common/dto/api-response.dto';
+import { GiftPageResponseDto, GiftResponseDto } from './dto/gift-response.dto';
 
 @Controller('admin/gift')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -28,33 +30,32 @@ export class AdminGiftsController {
 
     @Get()
     @UseGuards(AuthGuard('jwt'))
-    async getGiftsForAdmin(@Query() query: GetGiftDto): Promise<{
-        statusCode: number;
-        message: string;
-        data: Awaited<ReturnType<GiftsService['getGiftsForAdmin']>>;
-    }> {
+    async getGiftsForAdmin(
+        @Query() query: GetGiftDto,
+    ): Promise<ApiResponseDto<GiftPageResponseDto>> {
         const { limit = 10, page = 1, sortBy = 'createdAt', sortOrder = 'DESC' } = query;
         const data = await this.giftsService.getGiftsForAdmin(page, limit, sortBy, sortOrder);
 
         return {
             statusCode: 200,
             message: 'Fetched gifts successfully',
-            data,
+            data: GiftPageResponseDto.create(
+                data.items.map((gift) => GiftResponseDto.fromEntity(gift)),
+                data.meta,
+            ),
         };
     }
 
     @Post()
-    async createGift(@Body() createGiftDto: CreateGiftDto): Promise<{
-        statusCode: number;
-        message: string;
-        data: Awaited<ReturnType<GiftsService['createGift']>>;
-    }> {
+    async createGift(
+        @Body() createGiftDto: CreateGiftDto,
+    ): Promise<ApiResponseDto<GiftResponseDto>> {
         const data = await this.giftsService.createGift(createGiftDto);
 
         return {
             statusCode: 201,
             message: 'Gift created successfully',
-            data,
+            data: GiftResponseDto.fromEntity(data),
         };
     }
 
@@ -62,27 +63,21 @@ export class AdminGiftsController {
     async updateGift(
         @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateGiftDto: UpdateGiftDto,
-    ): Promise<{
-        statusCode: number;
-        message: string;
-        data: Awaited<ReturnType<GiftsService['updateGiftById']>>;
-    }> {
+    ): Promise<ApiResponseDto<GiftResponseDto>> {
         const data = await this.giftsService.updateGiftById(id, updateGiftDto);
 
         return {
             statusCode: 200,
             message: 'Gift updated successfully',
-            data,
+            data: GiftResponseDto.fromEntity(data),
         };
     }
 
     @Delete(':id')
     @HttpCode(200)
-    async deleteGift(@Param('id', new ParseUUIDPipe()) id: string): Promise<{
-        statusCode: number;
-        message: string;
-        data: { id: string };
-    }> {
+    async deleteGift(
+        @Param('id', new ParseUUIDPipe()) id: string,
+    ): Promise<ApiResponseDto<{ id: string }>> {
         await this.giftsService.deleteGiftById(id);
 
         return {
