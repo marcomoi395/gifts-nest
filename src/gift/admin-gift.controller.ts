@@ -46,6 +46,19 @@ export class AdminGiftsController {
         };
     }
 
+    @Get(':id')
+    async getGiftByIdForAdmin(
+        @Param('id', new ParseUUIDPipe()) id: string,
+    ): Promise<ApiResponseDto<GiftResponseDto>> {
+        const data = await this.giftsService.getGiftByIdForAdmin(id);
+
+        return {
+            statusCode: 200,
+            message: 'Fetched gift successfully',
+            data: GiftResponseDto.fromEntity(data),
+        };
+    }
+
     @Post()
     async createGift(
         @Body() createGiftDto: CreateGiftDto,

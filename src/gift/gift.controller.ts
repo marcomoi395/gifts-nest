@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Query, UseGuards } from '@nestjs/common';
 import { GiftsService } from './gift.service';
 import { GetGiftDto } from './dto/get-gift.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -22,6 +22,20 @@ export class GiftsController {
                 data.items.map((gift) => GiftResponseDto.fromEntity(gift)),
                 data.meta,
             ),
+        };
+    }
+
+    @Get(':id')
+    @UseGuards(AuthGuard('jwt'))
+    async getGiftById(
+        @Param('id', new ParseUUIDPipe()) id: string,
+    ): Promise<ApiResponseDto<GiftResponseDto>> {
+        const data = await this.giftsService.getGiftById(id);
+
+        return {
+            statusCode: 200,
+            message: 'Fetched gift successfully',
+            data: GiftResponseDto.fromEntity(data),
         };
     }
 }

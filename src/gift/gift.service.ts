@@ -71,6 +71,26 @@ export class GiftsService {
         };
     }
 
+    async getGiftById(id: string): Promise<Gift> {
+        const gift = await this.giftRepository.findOne({
+            where: { id, isActive: true },
+        });
+        if (!gift) {
+            throw new NotFoundException('Gift not found');
+        }
+
+        return gift;
+    }
+
+    async getGiftByIdForAdmin(id: string): Promise<Gift> {
+        const gift = await this.giftRepository.findOne({ where: { id } });
+        if (!gift) {
+            throw new NotFoundException('Gift not found');
+        }
+
+        return gift;
+    }
+
     async createGift(createGiftDto: CreateGiftDto): Promise<Gift> {
         const gift = this.giftRepository.create({
             ...createGiftDto,
